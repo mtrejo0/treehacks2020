@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TreeHacks</string>
+    <string name="title_activity_houndify">Houndify</string>
 </resources>

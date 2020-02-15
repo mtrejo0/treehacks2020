@@ -15,19 +15,27 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.hound.android.fd.DefaultRequestInfoFactory;
 import com.hound.android.fd.HoundSearchResult;
 import com.hound.android.fd.Houndify;
 import com.hound.core.model.sdk.HoundResponse;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static android.content.ContentValues.TAG;
 import static com.hound.android.fd.Houndify.REQUEST_CODE;
 
 public class ChatFragment extends Fragment {
 
-    Button button;
-    TextView tvText;
+    EditText etMessage;
+    Button btSend;
+    RecyclerView rvChat;
+    ArrayList<Message> mMessages;
+    ChatAdapter mAdapter;
 
     @Nullable
     @Override
@@ -39,29 +47,41 @@ public class ChatFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        tvText = view.findViewById(R.id.textView);
-        button = view.findViewById(R.id.button);
+        mMessages = new ArrayList<>();
+        mAdapter = new ChatAdapter(getActivity(), mMessages);
 
-        final Houndify houndify = Houndify.get(getContext());
-        houndify.setClientId("QNVXRd2992opalCLSpgOrg==");
-        houndify.setClientKey("gs2V7q0NDz8ACzns3WcJF-uQZiVHlZmpWMMtOLF6mzCoyF1a8qikloZjo4u462RSVm9piPOX6zYSn32oNV1g8A==");
-        houndify.setRequestInfoFactory(new DefaultRequestInfoFactory(getContext()));
+        btSend = view.findViewById(R.id.btSend);
+        rvChat = view.findViewById(R.id.rvChat);
+        etMessage = view.findViewById(R.id.etMessage);
+                mMessages.add(new Message("Hello how can I help you?",true));
+        mMessages.add(new Message("I have a shortness of breath",false));
+        mMessages.add(new Message("Is this a new problem?",true));
+        mMessages.add(new Message("No I have had this problem for a few weeks",false));
+        mMessages.add(new Message("I would recommend resting and setting up an appointment to see me",true));
+        mAdapter.notifyDataSetChanged();
+        rvChat.setAdapter(mAdapter);
 
-        button.setOnClickListener(new View.OnClickListener() {
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity() );
+        linearLayoutManager.setReverseLayout(false);
+        rvChat.setLayoutManager(linearLayoutManager);
+
+
+
+        btSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Houndify.get(getContext()).voiceSearch(getActivity(), REQUEST_CODE);
+                if(etMessage.getText().toString().length() == 0){
+                    return;
+                }
+                mMessages.add(new Message(etMessage.getText().toString(),false));
+                etMessage.setText("");
+                mAdapter.notifyDataSetChanged();
+                rvChat.scrollToPosition(mMessages.size()-1);
             }
         });
-
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        final HoundSearchResult result = Houndify.get(getActivity()).fromActivityResult(resultCode, data);
-        final HoundResponse houndResponse = result.getResponse();
-        Log.d("yessir", "onActivityResult:"+houndResponse);
-    }
+
 }
 
 

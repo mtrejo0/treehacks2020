@@ -21,13 +21,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hound.android.fd.DefaultRequestInfoFactory;
 import com.hound.android.fd.HoundSearchResult;
 import com.hound.android.fd.Houndify;
+import com.hound.android.fd.UserIdFactory;
+import com.hound.android.sdk.VoiceSearch;
+import com.hound.android.sdk.VoiceSearchInfo;
+import com.hound.android.sdk.audio.SimpleAudioByteStreamSource;
+import com.hound.android.sdk.util.HoundRequestInfoFactory;
+import com.hound.core.model.sdk.HoundRequestInfo;
 import com.hound.core.model.sdk.HoundResponse;
+import com.hound.core.model.sdk.PartialTranscript;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static android.content.ContentValues.TAG;
 import static com.hound.android.fd.Houndify.REQUEST_CODE;
@@ -41,6 +53,7 @@ public class ChatFragment extends Fragment {
     ChatAdapter mAdapter;
     Button btnMic;
     final static int REQUEST_CODE = 100;
+
 
     @Nullable
     @Override
@@ -87,26 +100,12 @@ public class ChatFragment extends Fragment {
         btnMic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                etMessage.setText("whats up cuuuuhhhhhhhh");
                 Houndify.get(getContext()).voiceSearch(getActivity(), REQUEST_CODE);
+                etMessage.setText("My head hurts and im feeling light headed");
             }
         });
-
-        final Houndify houndify = Houndify.get(getContext());
-        houndify.setClientId("QNVXRd2992opalCLSpgOrg==");
-        houndify.setClientKey("gs2V7q0NDz8ACzns3WcJF-uQZiVHlZmpWMMtOLF6mzCoyF1a8qikloZjo4u462RSVm9piPOX6zYSn32oNV1g8A==");
-        houndify.setRequestInfoFactory(new DefaultRequestInfoFactory(getContext()));
-
-
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE) {
-            final HoundSearchResult result = Houndify.get(getActivity()).fromActivityResult(resultCode, data);
-            final HoundResponse houndResponse = result.getResponse();
-        }
-    }
 
 
 }

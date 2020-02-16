@@ -22,6 +22,9 @@ import com.hound.android.fd.DefaultRequestInfoFactory;
 import com.hound.android.fd.HoundSearchResult;
 import com.hound.android.fd.Houndify;
 import com.hound.core.model.sdk.HoundResponse;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +39,8 @@ public class ChatFragment extends Fragment {
     RecyclerView rvChat;
     ArrayList<Message> mMessages;
     ChatAdapter mAdapter;
+    Button btnMic;
+    final static int REQUEST_CODE = 100;
 
     @Nullable
     @Override
@@ -52,6 +57,7 @@ public class ChatFragment extends Fragment {
 
         btSend = view.findViewById(R.id.btSend);
         rvChat = view.findViewById(R.id.rvChat);
+        btnMic = view.findViewById(R.id.btnMic);
         etMessage = view.findViewById(R.id.etMessage);
                 mMessages.add(new Message("Hello how can I help you?",true));
         mMessages.add(new Message("I have a shortness of breath",false));
@@ -65,8 +71,6 @@ public class ChatFragment extends Fragment {
         linearLayoutManager.setReverseLayout(false);
         rvChat.setLayoutManager(linearLayoutManager);
 
-
-
         btSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,6 +83,37 @@ public class ChatFragment extends Fragment {
                 rvChat.scrollToPosition(mMessages.size()-1);
             }
         });
+
+        btnMic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                etMessage.setText("whats up cuuuuhhhhhhhh");
+                Houndify.get(getContext()).voiceSearch(getActivity(), REQUEST_CODE);
+            }
+        });
+
+        final Houndify houndify = Houndify.get(getContext());
+        houndify.setClientId("QNVXRd2992opalCLSpgOrg==");
+        houndify.setClientKey("gs2V7q0NDz8ACzns3WcJF-uQZiVHlZmpWMMtOLF6mzCoyF1a8qikloZjo4u462RSVm9piPOX6zYSn32oNV1g8A==");
+        houndify.setRequestInfoFactory(new DefaultRequestInfoFactory(getContext()));
+
+        GraphView graph = (GraphView) view.findViewById(R.id.graph);
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
+                new DataPoint(0, 1),
+                new DataPoint(1, 5),
+                new DataPoint(2, 3),
+                new DataPoint(3, 2),
+                new DataPoint(4, 6)
+        });
+        graph.addSeries(series);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            final HoundSearchResult result = Houndify.get(getActivity()).fromActivityResult(resultCode, data);
+            final HoundResponse houndResponse = result.getResponse();
+        }
     }
 
 
